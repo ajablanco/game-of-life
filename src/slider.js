@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
@@ -14,14 +14,9 @@ function valuetext(value) {
   return `${value}`;
 }
 
-export default function DiscreteSlider() {
+export default function DiscreteSlider(props) {
   const classes = useStyles();
-  const [value, setValue] = useState(300);
-
-  const handleChange = (e) => {
-    setValue(e.target.value);
-  };
-
+  const {handleChange} = props;
   return (
     <div className={classes.root}>
       <Typography id="discrete-slider" gutterBottom>

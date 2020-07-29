@@ -10,6 +10,8 @@ import Img5 from "./images/5.png";
 import Img6 from "./images/6.png";
 import Img7 from "./images/7.png";
 import DiscreteSlider from "./slider";
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import StopIcon from '@material-ui/icons/Stop';
 
 const numRows = 25;
 const numCols = 25;
@@ -40,11 +42,7 @@ const App = () => {
   });
 
   const [running, setRunning] = useState(false);
-  const [value, setValue] = useState(300)
-
-  function handleChange(newValue) {
-    setValue(newValue)
-  }
+  const [value, setValue] = useState(300);
 
   const runningRef = useRef(running);
   runningRef.current = running;
@@ -52,7 +50,11 @@ const App = () => {
   const speedRef = useRef(value);
   speedRef.current = value;
 
+  function handleChange(e) {
+    setValue(parseInt(e.target.ariaValueNow, 10));
+  }
 
+  console.log(value);
 
   const runSimulation = useCallback(() => {
     if (!runningRef.current) {
@@ -81,67 +83,8 @@ const App = () => {
         }
       });
     });
-    setTimeout(runSimulation, value);
-  }, []);
-
-  const slowSimulation = useCallback(() => {
-    if (!runningRef.current) {
-      return;
-    }
-
-    setGrid((g) => {
-      return produce(g, (gridCopy) => {
-        for (let i = 0; i < numRows; i++) {
-          for (let k = 0; k < numCols; k++) {
-            let neighbors = 0;
-            operations.forEach(([x, y]) => {
-              const newI = i + x;
-              const newK = k + y;
-              if (newI >= 0 && newI < numRows && newK >= 0 && newK < numCols) {
-                neighbors += g[newI][newK];
-              }
-            });
-
-            if (neighbors < 2 || neighbors > 3) {
-              gridCopy[i][k] = 0;
-            } else if (g[i][k] === 0 && neighbors === 3) {
-              gridCopy[i][k] = 1;
-            }
-          }
-        }
-      });
-    });
-    setTimeout(slowSimulation, 1200);
-  }, []);
-
-  const fastSimulation = useCallback(() => {
-    if (!runningRef.current) {
-      return;
-    }
-
-    setGrid((g) => {
-      return produce(g, (gridCopy) => {
-        for (let i = 0; i < numRows; i++) {
-          for (let k = 0; k < numCols; k++) {
-            let neighbors = 0;
-            operations.forEach(([x, y]) => {
-              const newI = i + x;
-              const newK = k + y;
-              if (newI >= 0 && newI < numRows && newK >= 0 && newK < numCols) {
-                neighbors += g[newI][newK];
-              }
-            });
-
-            if (neighbors < 2 || neighbors > 3) {
-              gridCopy[i][k] = 0;
-            } else if (g[i][k] === 0 && neighbors === 3) {
-              gridCopy[i][k] = 1;
-            }
-          }
-        }
-      });
-    });
-    setTimeout(fastSimulation, 50);
+    setTimeout(runSimulation, speedRef.current);
+    console.log(speedRef.current);
   }, []);
 
   const nextStep = useCallback(() => {
@@ -208,7 +151,7 @@ const App = () => {
         <div
           style={{ display: "flex", justifyContent: "center", marginTop: "2%" }}
         >
-          <DiscreteSlider setValue={value} onChange={handleChange} />
+          <DiscreteSlider handleChange={handleChange} />
         </div>
 
         <div className="buttons">
@@ -221,44 +164,8 @@ const App = () => {
               }
             }}
           >
-            {running ? "Stop" : "Start"}
+            {running ? <StopIcon/> : <PlayArrowIcon/>}
           </button>
-
-          <button
-            onClick={() => {
-              setRunning(!running);
-              if (!running) {
-                runningRef.current = true;
-                fastSimulation();
-              }
-            }}
-          >
-            10x
-          </button>
-          <button
-            onClick={() => {
-              setRunning(!running);
-              if (!running) {
-                runningRef.current = true;
-                slowSimulation();
-              }
-            }}
-          >
-            0.5x
-          </button>
-
-          <button
-            onClick={() => {
-              setRunning(!running);
-              if (!running) {
-                runningRef.current = true;
-                nextStep();
-              }
-            }}
-          >
-            Step
-          </button>
-          <br />
           <button
             onClick={() => {
               const rows = [];
@@ -275,6 +182,19 @@ const App = () => {
           >
             Random
           </button>
+
+          <button
+            onClick={() => {
+              setRunning(!running);
+              if (!running) {
+                runningRef.current = true;
+                nextStep();
+              }
+            }}
+          >
+            Step
+          </button>
+
           <button
             onClick={() => {
               setGrid(generateEmptyGrid());
