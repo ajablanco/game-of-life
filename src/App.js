@@ -125,7 +125,7 @@ const App = () => {
   return (
     <div className="body">
       <div className="game">
-        <h1>Conway's Game of Life</h1>
+        <h1>Aja's "Game of Life"</h1>
         <div>
           <h4>Generation: {gen}</h4>
         </div>
