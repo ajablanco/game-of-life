@@ -10,8 +10,9 @@ import Img5 from "./images/5.png";
 import Img6 from "./images/6.png";
 import Img7 from "./images/7.png";
 import DiscreteSlider from "./slider";
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import StopIcon from '@material-ui/icons/Stop';
+import PlayArrowIcon from "@material-ui/icons/PlayArrow";
+import StopIcon from "@material-ui/icons/Stop";
+import { templates } from "./templates/templates";
 
 const numRows = 25;
 const numCols = 25;
@@ -43,6 +44,10 @@ const App = () => {
 
   const [running, setRunning] = useState(false);
   const [value, setValue] = useState(300);
+  const [gen, setGen] = useState(0);
+
+  const genRef = useRef();
+  genRef.current = gen;
 
   const runningRef = useRef(running);
   runningRef.current = running;
@@ -60,7 +65,7 @@ const App = () => {
     if (!runningRef.current) {
       return;
     }
-
+    setGen((genRef.current += 1));
     setGrid((g) => {
       return produce(g, (gridCopy) => {
         for (let i = 0; i < numRows; i++) {
@@ -91,7 +96,7 @@ const App = () => {
     if (!runningRef.current) {
       return;
     }
-
+    setGen((genRef.current += 1));
     setGrid((g) => {
       return produce(g, (gridCopy) => {
         for (let i = 0; i < numRows; i++) {
@@ -121,7 +126,9 @@ const App = () => {
     <div className="body">
       <div className="game">
         <h1>Conway's Game of Life</h1>
-
+        <div>
+          <h4>Generation: {gen}</h4>
+        </div>
         <div
           style={{
             display: "grid",
@@ -141,7 +148,7 @@ const App = () => {
                 style={{
                   width: 15,
                   height: 15,
-                  backgroundColor: grid[i][k] ? "lavender" : undefined,
+                  backgroundColor: grid[i][k] ? "rgb(247, 0, 255)" : undefined,
                   border: "solid 1px grey",
                 }}
               />
@@ -155,7 +162,7 @@ const App = () => {
         </div>
 
         <div className="buttons">
-          <button
+          <button className="button"
             onClick={() => {
               setRunning(!running);
               if (!running) {
@@ -164,9 +171,9 @@ const App = () => {
               }
             }}
           >
-            {running ? <StopIcon/> : <PlayArrowIcon/>}
+            {running ? <StopIcon style={{height: "20px"}}/> : <PlayArrowIcon style={{height: "20px"}}/>}
           </button>
-          <button
+          <button className="button"
             onClick={() => {
               const rows = [];
               for (let i = 0; i < numRows; i++) {
@@ -183,7 +190,7 @@ const App = () => {
             Random
           </button>
 
-          <button
+          <button className="button"
             onClick={() => {
               setRunning(!running);
               if (!running) {
@@ -195,13 +202,30 @@ const App = () => {
             Step
           </button>
 
-          <button
-            onClick={() => {
+          <button className="button"
+            onClick={(e) => {
+              e.preventDefault();
+              setGen(0)
               setGrid(generateEmptyGrid());
+
             }}
           >
             Clear
           </button>
+          <select className="button"
+            onChange={(e) => {
+              e.preventDefault();
+              setGen(0);
+              setGrid(templates[e.target.value]);
+              // console.log(patterns)
+            }}
+          >
+            <option>Select a Template</option>
+            <option>pulsar</option>
+            <option>figure8</option>
+            <option>spaceship</option>
+            <option>clover</option>
+          </select>
         </div>
       </div>
       <div className="instructions" style={{ width: "500px" }}>
